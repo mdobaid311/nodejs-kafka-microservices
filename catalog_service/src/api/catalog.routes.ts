@@ -61,7 +61,7 @@ router.get(
       return res.status(500).json(err.message);
     }
   },
-);
+); 
 
 router.get(
   "/products/:id",

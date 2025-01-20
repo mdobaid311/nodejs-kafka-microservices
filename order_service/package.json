@@ -16,6 +16,8 @@
   "description": "",
   "dependencies": {
     "@electric-sql/pglite": "^0.2.15",
+    "@sinclair/typebox": "^0.34.13",
+    "ajv": "^8.17.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.38.3",

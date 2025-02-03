@@ -2,7 +2,7 @@ import { ClassConstructor, plainToClass } from "class-transformer";
 import { ValidationError, validate } from "class-validator";
 
 const validationError = async (
-  input: any,
+  input: any
 ): Promise<ValidationError[] | false> => {
   const errors = await validate(input, {
     validationError: { target: true },
@@ -17,7 +17,7 @@ const validationError = async (
 
 export const RequestValidator = async <T>(
   type: ClassConstructor<T>,
-  body: any,
+  body: any
 ): Promise<{ errors: boolean | string; input: T }> => {
   const input = plainToClass(type, body);
 
@@ -25,7 +25,7 @@ export const RequestValidator = async <T>(
   if (errors) {
     const errorMessage = errors
       .map((error: ValidationError) =>
-        (Object as any).values(error.constraints),
+        (Object as any).values(error.constraints)
       )
       .join(", ");
     return { errors: errorMessage, input };

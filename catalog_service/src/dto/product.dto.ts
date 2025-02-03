@@ -21,7 +21,6 @@ export class UpdateProductRequest {
 
   description?: string;
 
-  @Min(1)
   price?: number;
 
   @IsNumber()

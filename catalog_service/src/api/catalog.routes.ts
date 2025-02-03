@@ -14,26 +14,26 @@ router.post(
     try {
       const { errors, input } = await RequestValidator(
         CreateProductRequest,
-        req.body,
+        req.body
       );
 
       if (errors) return res.status(400).json(errors);
       const data = await catalogService.createProduct(input);
       return res.status(201).json(data);
     } catch (error) {
-      const err = error as Error;
-      return res.status(500).json(err.message);
+      return next(error);
     }
-  },
+  }
 );
 
 router.patch(
   "/products/:id",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      console.log("body",req.body);
       const { errors, input } = await RequestValidator(
         UpdateProductRequest,
-        req.body,
+        req.body
       );
 
       const id = parseInt(req.params.id) || 0;
@@ -42,10 +42,9 @@ router.patch(
       const data = await catalogService.updateProduct({ id, ...input });
       return res.status(200).json(data);
     } catch (error) {
-      const err = error as Error;
-      return res.status(500).json(err.message);
+      return next(error);
     }
-  },
+  }
 );
 
 router.get(
@@ -57,11 +56,10 @@ router.get(
       const data = await catalogService.getProducts(limit, offset);
       return res.status(200).json(data);
     } catch (error) {
-      const err = error as Error;
-      return res.status(500).json(err.message);
+      return next(error);
     }
-  },
-); 
+  }
+);
 
 router.get(
   "/products/:id",
@@ -73,7 +71,7 @@ router.get(
     } catch (error) {
       return next(error);
     }
-  },
+  }
 );
 
 router.delete(
@@ -84,9 +82,8 @@ router.delete(
       const data = await catalogService.deleteProduct(id);
       return res.status(200).json(data);
     } catch (error) {
-      const err = error as Error;
-      return res.status(500).json(err.message);
+      return next(error);
     }
-  },
+  }
 );
 export default router;

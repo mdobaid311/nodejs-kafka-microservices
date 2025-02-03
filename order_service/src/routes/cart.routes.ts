@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import * as service from "../service/cart.service";
 import * as repository from "../repository/cart.repository";
 import { ValidateRequest } from "../utils/validator";
@@ -7,26 +7,29 @@ const router = express.Router();
 
 const repo = repository.CartRepository;
 
-router.post("/cart", async (req: Request, res: Response) => {
-  try {
-    const error = ValidateRequest<CartRequestInput>(
-      req.body,
-      CartRequestSchema
-    );
-    if (error) {
-      res.status(400).json({ error });
-      return;
-    }
+router.post(
+  "/cart",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const error = ValidateRequest<CartRequestInput>(
+        req.body,
+        CartRequestSchema
+      );
+      if (error) {
+        res.status(400).json({ error });
+        return;
+      }
 
-    const response = await service.CreateCart(
-      req.body as CartRequestInput,
-      repo
-    );
-    res.status(200).json(response);
-  } catch (error) {
-    res.status(500).json({ error });
+      const response = await service.CreateCart(
+        req.body as CartRequestInput,
+        repo
+      );
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 router.get("/cart", async (req: Request, res: Response) => {
   const response = await service.GetCart(req.body, repo);

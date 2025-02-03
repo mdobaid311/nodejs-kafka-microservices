@@ -1,18 +1,14 @@
 import express from "express";
 import catalogRouter from "./api/catalog.routes";
-import morgan from "morgan";
-import helmet from "helmet";
+import { HandleErrorWithLogger, httpLogger } from "./utils";
 
 const app = express();
-
 app.use(express.json());
-app.use(morgan("dev"));
-app.use(helmet());
 
-app.get("/health", (req, res) => {
-  res.status(200).send("Catalog Service is running");
-});
+app.use(httpLogger);
 
 app.use("/", catalogRouter);
+
+app.use(HandleErrorWithLogger);
 
 export default app;

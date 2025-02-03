@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { ICatalogRespostory } from "../interface/catalogRepository.interface";
 import { Product } from "../models/product.model";
+import { NotFoundError } from "../utils";
 
 export class CatalogRepostiory implements ICatalogRespostory {
   _prisma: PrismaClient;
@@ -37,7 +38,7 @@ export class CatalogRepostiory implements ICatalogRespostory {
       where: { id: id },
     });
     if (!product) {
-      throw new Error("Product not found");
+      throw new NotFoundError("Product not found");
     }
     return product;
   }

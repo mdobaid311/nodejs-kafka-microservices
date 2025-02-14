@@ -2,7 +2,7 @@ import request from "supertest";
 import express from "express";
 import { faker } from "@faker-js/faker";
 import catalogRoutes, { catalogService } from "../catalog.routes";
-import { productFactory } from "../../utils/fixtures";
+import { ProductFactory } from "../../utils";
 
 const app = express();
 app.use(express.json());
@@ -21,7 +21,7 @@ describe("Catalog Routes", () => {
   describe("POST /products", () => {
     test("should create product successfully", async () => {
       const requestBody = mockRequest();
-      const product = productFactory.build();
+      const product = ProductFactory.build();
 
       jest
         .spyOn(catalogService, "createProduct")
@@ -69,7 +69,7 @@ describe("Catalog Routes", () => {
 
   describe("PATCH /products/:id", () => {
     test("should update product successfully", async () => {
-      const product = productFactory.build();
+      const product = ProductFactory.build();
 
       const requestBody = {
         name: product.name,
@@ -91,7 +91,7 @@ describe("Catalog Routes", () => {
     });
 
     test("should response with validation error 400", async () => {
-      const product = productFactory.build();
+      const product = ProductFactory.build();
 
       const requestBody = {
         name: product.name,
@@ -109,7 +109,7 @@ describe("Catalog Routes", () => {
     });
 
     test("should response with an internal error code 500", async () => {
-      const product = productFactory.build();
+      const product = ProductFactory.build();
 
       const requestBody = mockRequest();
 
@@ -132,7 +132,7 @@ describe("Catalog Routes", () => {
   describe("GET /products?limit=0&offset=0", () => {
     test("should return a range of products based on limit and offset", async () => {
       const randomLimit = faker.number.int({ min: 10, max: 50 });
-      const products = productFactory.buildList(randomLimit);
+      const products = ProductFactory.buildList(randomLimit);
       jest
         .spyOn(catalogService, "getProducts")
         .mockImplementationOnce(() => Promise.resolve(products));
@@ -146,7 +146,7 @@ describe("Catalog Routes", () => {
 
   describe("GET /products/:id", () => {
     test("should return a product by id", async () => {
-      const product = productFactory.build();
+      const product = ProductFactory.build();
       jest
         .spyOn(catalogService, "getProduct")
         .mockImplementationOnce(() => Promise.resolve(product));
@@ -160,7 +160,7 @@ describe("Catalog Routes", () => {
 
   describe("DELETE /products/:id", () => {
     test("should delete a product by id", async () => {
-      const product = productFactory.build();
+      const product = ProductFactory.build();
       jest
         .spyOn(catalogService, "deleteProduct")
         .mockImplementationOnce(() => Promise.resolve({ id: product.id }));

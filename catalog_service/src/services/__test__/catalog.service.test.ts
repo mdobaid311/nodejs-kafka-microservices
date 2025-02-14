@@ -1,7 +1,7 @@
 import { ICatalogRespostory } from "../../interface/catalogRepository.interface";
 import { Product } from "../../models/product.model";
 import { MockCatalogRepository } from "../../repository/mockCatalog.repository";
-import { productFactory } from "../../utils/fixtures";
+import { ProductFactory } from "../../utils";
 import { CatalogService } from "../catalog.service";
 import { faker } from "@faker-js/faker";
 
@@ -103,7 +103,7 @@ describe("catalogService", () => {
     test("should get products by offset and limit", async () => {
       const service = new CatalogService(repository);
       const randomLimit = faker.number.int({ min: 1, max: 50 });
-      const products = productFactory.buildList(randomLimit);
+      const products = ProductFactory.buildList(randomLimit);
 
       jest
         .spyOn(repository, "find")
@@ -132,7 +132,7 @@ describe("catalogService", () => {
   describe("getProducts", () => {
     test("should get product by id", async () => {
       const service = new CatalogService(repository);
-      const product = productFactory.build();
+      const product = ProductFactory.build();
 
       jest
         .spyOn(repository, "findOne")
@@ -146,7 +146,7 @@ describe("catalogService", () => {
   describe("deleteProducts", () => {
     test("should delete product by id", async () => {
       const service = new CatalogService(repository);
-      const product = productFactory.build();
+      const product = ProductFactory.build();
 
       jest
         .spyOn(repository, "delete")

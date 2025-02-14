@@ -5,7 +5,6 @@ import { RequestValidator } from "../utils/requestValidator";
 import { CreateProductRequest, UpdateProductRequest } from "../dto/product.dto";
 
 const router = express.Router();
-
 export const catalogService = new CatalogService(new CatalogRepostiory());
 
 router.post(

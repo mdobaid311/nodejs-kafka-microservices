@@ -4,10 +4,9 @@ import { HandleErrorWithLogger, httpLogger } from "./utils";
 
 const app = express();
 app.use(express.json());
-
 app.use(httpLogger);
 
-app.use("/", catalogRouter);
+app.use(catalogRouter);
 
 app.use(HandleErrorWithLogger);
 

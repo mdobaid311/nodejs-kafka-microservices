@@ -7,8 +7,14 @@ const router = express.Router();
 
 const repo = repository.CartRepository;
 
+const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  // check if user is authenticated
+  next();
+};
+
 router.post(
   "/cart",
+  authMiddleware,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const error = ValidateRequest<CartRequestInput>(
@@ -32,17 +38,26 @@ router.post(
 );
 
 router.get("/cart", async (req: Request, res: Response) => {
-  const response = await service.GetCart(req.body, repo);
+  // comes from our auth user parsed from JWT
+  const response = await service.GetCart(req.body.customerId, repo);
   res.status(200).json(response);
 });
 
-router.patch("/cart", async (req: Request, res: Response) => {
-  const response = await service.EditCart(req.body, repo);
+router.patch("/cart/:lineItemId", async (req: Request, res: Response) => {
+  const lineItemId = req.params.lineItemId;
+  const response = await service.EditCart(
+    {
+      id: +lineItemId,
+      qty: req.body.qty,
+    },
+    repo
+  );
   res.status(200).json(response);
 });
 
-router.delete("/cart", async (req: Request, res: Response) => {
-  const response = await service.DeleteCart(req.body, repo);
+router.delete("/cart/:lineItemId", async (req: Request, res: Response) => {
+  const lineItemId = req.params.lineItemId;
+  const response = await service.DeleteCart(+lineItemId, repo);
   res.status(200).json(response);
 });
 

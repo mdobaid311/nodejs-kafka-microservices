@@ -5,11 +5,11 @@ export const RequestAuthorizer = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<void> => {
   console.log("RequestAuthorizer called", req.headers.authorization);
   try {
     if (!req.headers.authorization) {
-      return res
+      res
         .status(403)
         .json({ error: "Unauthorized due to authorization token missing!" });
     }
@@ -18,6 +18,6 @@ export const RequestAuthorizer = async (
     next();
   } catch (error) {
     console.log("error", error);
-    return res.status(403).json({ error });
+    res.status(403).json({ error });
   }
 };

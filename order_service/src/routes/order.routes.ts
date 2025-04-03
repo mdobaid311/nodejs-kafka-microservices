@@ -3,13 +3,14 @@ import * as service from "../service/order.service";
 import { RequestAuthorizer } from "./middleware";
 import { OrderRepository } from "../repository/order.repository";
 import { CartRepository } from "../repository/cart.repository";
+import { OrderStatus } from "../types";
 
 const repo = OrderRepository;
 const cartRepo = CartRepository;
 const router = express.Router();
 
 router.post(
-  "/order",
+  "/orders",
   RequestAuthorizer,
   async (req: Request, res: Response, next: NextFunction) => {
     const user = req?.user;
@@ -53,7 +54,11 @@ router.patch(
   "/orders/:id",
   async (req: Request, res: Response, next: NextFunction) => {
     const orderId = parseInt(req.params.id) || 0;
-    const response = await service.UpdateOrder(orderId, req.body.status, repo);
+    const response = await service.UpdateOrder(
+      orderId,
+      req.body.status as OrderStatus,
+      repo
+    );
     res.status(200).json(response);
   }
 );

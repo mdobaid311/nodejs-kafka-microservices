@@ -1,4 +1,5 @@
 import { ICatalogRespostory } from "../interface/catalogRepository.interface";
+import { OrderWithLineItems } from "../types/message.type";
 
 export class CatalogService {
   private _repository: ICatalogRespostory;
@@ -45,5 +46,22 @@ export class CatalogService {
       throw new Error("unable to fund product stock details");
     }
     return products;
+  }
+
+  async handleBrokerMessage(message: any) {
+    console.log("handle broker message", message);
+    const orderData = message.data as OrderWithLineItems;
+    const { orderItems } = orderData;
+
+    orderItems.forEach(async (item) => {
+      console.log("updateing stock for item", item);
+      const product = await this._repository.findOne(item.productId);
+      if (!product) {
+        console.log("product not found", item.productId, item.qty);
+      } else {
+        const updatedStock = product.stock - item.qty;
+        await this._repository.update({ ...product, stock: updatedStock });
+      }
+    });
   }
 }

@@ -31,11 +31,19 @@ export class CatalogService {
     return products;
   }
 
-  getProduct(id: number) {
+  async getProduct(id: number) {
     return this._repository.findOne(id);
   }
 
-  deleteProduct(id: any) {
+  async deleteProduct(id: any) {
     return this._repository.delete(id);
+  }
+
+  async getProductStock(ids: number[]) {
+    const products = await this._repository.findStock(ids);
+    if (!products.length) {
+      throw new Error("unable to fund product stock details");
+    }
+    return products;
   }
 }

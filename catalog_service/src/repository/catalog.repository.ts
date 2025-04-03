@@ -42,4 +42,12 @@ export class CatalogRepostiory implements ICatalogRespostory {
     }
     return product;
   }
+
+  async findStock(ids: number[]): Promise<Product[]> {
+    return this._prisma.product.findMany({
+      where: {
+        id: { in: ids },
+      },
+    });
+  }
 }

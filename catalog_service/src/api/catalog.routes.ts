@@ -29,7 +29,7 @@ router.patch(
   "/products/:id",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log("body",req.body);
+      console.log("body", req.body);
       const { errors, input } = await RequestValidator(
         UpdateProductRequest,
         req.body
@@ -85,4 +85,14 @@ router.delete(
     }
   }
 );
+
+router.post("/products/stock", async (req: Request, res: Response) => {
+  try {
+    const ids = req.body.ids;
+    const data = await catalogService.getProductStock(ids);
+    return res.status(200).json(data);
+  } catch (error) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
 export default router;

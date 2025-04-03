@@ -16,20 +16,20 @@ export const ExpressApp = async () => {
   app.use(httpLogger);
 
   // 1. Connect the consumer and producer
-  const producer = await MessageBroker.connectProducer<Producer>();
-  producer.on("producer.connect", () => {
-    console.log("Producer connected");
-  });
+  // const producer = await MessageBroker.connectProducer<Producer>();
+  // producer.on("producer.connect", () => {
+  //   console.log("Producer connected");
+  // });
 
-  const consumer = await MessageBroker.connectConsumer<Consumer>();
-  consumer.on("consumer.connect", () => {
-    console.log("Consumer connected");
-  });
+  // const consumer = await MessageBroker.connectConsumer<Consumer>();
+  // consumer.on("consumer.connect", () => {
+  //   console.log("Consumer connected");
+  // });
 
-  // subscribe to the topic
-  await MessageBroker.subscribe((input) => {
-    console.log("Received message", input);
-  }, "OrderEvents");
+  // // subscribe to the topic
+  // await MessageBroker.subscribe((input) => {
+  //   console.log("Received message", input);
+  // }, "OrderEvents");
 
   app.use(cartRoutes);
   app.use(orderRoutes);

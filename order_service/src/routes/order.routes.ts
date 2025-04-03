@@ -1,49 +1,75 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import * as service from "../service/order.service";
-import { MessageBroker } from "../utils";
-import { OrderEvent } from "../types";
+import { RequestAuthorizer } from "./middleware";
+import { OrderRepository } from "../repository/order.repository";
+import { CartRepository } from "../repository/cart.repository";
+
+const repo = OrderRepository;
+const cartRepo = CartRepository;
 const router = express.Router();
 
-router.post("/order", async (req: Request, res: Response) => {
-  await MessageBroker.publish({
-    topic: "OrderEvents",
-    headers: {
-      token: "req.headers.authorization",
-    },
-    event: OrderEvent.CREATE_ORDER,
-    message: {
-      orderId: 1,
-      items: [
-        {
-          productId: 1,
-          quantity: 1,
-        },
-        {
-          productId: 2,
-          quantity: 2,
-        },
-      ],
-    },
-  });
-  // const response = service.CreateOrder(req.body);
-  res.status(200).json({
-    message: "Order created successfully",
-  });
-});
+router.post(
+  "/order",
+  RequestAuthorizer,
+  async (req: Request, res: Response, next: NextFunction) => {
+    const user = req?.user;
+    if (!user) {
+      next(new Error("User not found"));
+      return;
+    }
 
-router.get("/order", (req: Request, res: Response) => {
-  const response = service.GetOrder(req.body);
-  res.status(200).json(response);
-});
+    const response = await service.CreateOrder(user.id, repo, cartRepo);
+    res.status(200).json(response);
+  }
+);
 
-router.patch("/order", (req: Request, res: Response) => {
-  const response = service.EditOrder(req.body);
-  res.status(200).json(response);
-});
+router.get(
+  "/orders",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const user = req?.user;
+    if (!user) {
+      next(new Error("User not found"));
+      return;
+    }
+    const response = await service.GetOrders(user.id, repo);
+    res.status(200).json(response);
+  }
+);
 
-router.delete("/order", (req: Request, res: Response) => {
-  const response = service.DeleteOrder(req.body);
-  res.status(200).json(response);
-});
+router.get(
+  "/order/:id",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const user = req?.user;
+    if (!user) {
+      next(new Error("User not found"));
+      return;
+    }
+    const response = await service.GetOrder(user.id, repo);
+    res.status(200).json(response);
+  }
+);
+
+router.patch(
+  "/orders/:id",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const orderId = parseInt(req.params.id) || 0;
+    const response = await service.UpdateOrder(orderId, req.body.status, repo);
+    res.status(200).json(response);
+  }
+);
+
+router.delete(
+  "/orders/:id",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const user = req?.user;
+    if (!user) {
+      next(new Error("User not found"));
+      return;
+    }
+    const orderId = parseInt(req.params.id) || 0;
+    const response = await service.DeleteOrder(orderId, repo);
+    res.status(200).json(response);
+  }
+);
 
 export default router;

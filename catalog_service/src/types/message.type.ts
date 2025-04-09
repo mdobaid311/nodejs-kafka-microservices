@@ -7,5 +7,5 @@ export type OrderLineItemType = {
 export interface OrderWithLineItems {
   id?: number;
   orderNumber: number;
-  orderItems: OrderLineItemType[];
+  lineItems: OrderLineItemType[];
 }

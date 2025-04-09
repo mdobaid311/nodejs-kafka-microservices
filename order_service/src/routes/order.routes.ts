@@ -13,67 +13,89 @@ router.post(
   "/orders",
   RequestAuthorizer,
   async (req: Request, res: Response, next: NextFunction) => {
-    const user = req?.user;
-    if (!user) {
-      next(new Error("User not found"));
-      return;
-    }
+    try {
+      const user = req?.user;
+      if (!user) {
+        next(new Error("User not found"));
+        return;
+      }
 
-    const response = await service.CreateOrder(user.id, repo, cartRepo);
-    res.status(200).json(response);
+      const response = await service.CreateOrder(user.id, repo, cartRepo);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
   }
 );
 
 router.get(
   "/orders",
+  RequestAuthorizer,
   async (req: Request, res: Response, next: NextFunction) => {
-    const user = req?.user;
-    if (!user) {
-      next(new Error("User not found"));
-      return;
+    try {
+      const user = req?.user;
+      if (!user) {
+        next(new Error("User not found"));
+        return;
+      }
+      const response = await service.GetOrders(user.id, repo);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
     }
-    const response = await service.GetOrders(user.id, repo);
-    res.status(200).json(response);
   }
 );
 
 router.get(
   "/order/:id",
   async (req: Request, res: Response, next: NextFunction) => {
-    const user = req?.user;
-    if (!user) {
-      next(new Error("User not found"));
-      return;
+    try {
+      const user = req?.user;
+      if (!user) {
+        next(new Error("User not found"));
+        return;
+      }
+      const response = await service.GetOrder(user.id, repo);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
     }
-    const response = await service.GetOrder(user.id, repo);
-    res.status(200).json(response);
   }
 );
 
 router.patch(
   "/orders/:id",
   async (req: Request, res: Response, next: NextFunction) => {
-    const orderId = parseInt(req.params.id) || 0;
-    const response = await service.UpdateOrder(
-      orderId,
-      req.body.status as OrderStatus,
-      repo
-    );
-    res.status(200).json(response);
+    try {
+      const orderId = parseInt(req.params.id) || 0;
+      const response = await service.UpdateOrder(
+        orderId,
+        req.body.status as OrderStatus,
+        repo
+      );
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
   }
 );
 
 router.delete(
   "/orders/:id",
+  RequestAuthorizer,
   async (req: Request, res: Response, next: NextFunction) => {
-    const user = req?.user;
-    if (!user) {
-      next(new Error("User not found"));
-      return;
+    try {
+      const user = req?.user;
+      if (!user) {
+        next(new Error("User not found"));
+        return;
+      }
+      const orderId = parseInt(req.params.id) || 0;
+      const response = await service.DeleteOrder(orderId, repo);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
     }
-    const orderId = parseInt(req.params.id) || 0;
-    const response = await service.DeleteOrder(orderId, repo);
-    res.status(200).json(response);
   }
 );
 

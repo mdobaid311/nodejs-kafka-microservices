@@ -1,4 +1,5 @@
 import { ICatalogRespostory } from "../interface/catalogRepository.interface";
+import { CatalogEvent } from "../types";
 import { OrderWithLineItems } from "../types/message.type";
 
 export class CatalogService {
@@ -50,22 +51,45 @@ export class CatalogService {
 
   async handleBrokerMessage(message: any) {
     console.log("handle broker message", message);
-    const orderData = message.data as OrderWithLineItems;
-    const { orderItems } = orderData;
+    if (message.event === CatalogEvent.CREATE_ORDER) {
+      const orderData = message.data as OrderWithLineItems;
+      const { lineItems } = orderData;
 
-    orderItems.forEach(async (item) => {
-      console.log("updateing stock for item", item);
-      const product = await this._repository.findOne(item.productId);
-      if (!product) {
-        console.log("product not found", item.productId, item.qty);
-      } else {
-        const updatedStock = product.stock - item.qty;
-        await this.updateProduct({
-          id: product.id,
-          stock: updatedStock,
-        });
-        console.log("updated stock for product", product.id, updatedStock);
-      }
-    });
+      lineItems.forEach(async (item) => {
+        console.log("updateing stock for item", item);
+        const product = await this._repository.findOne(item.productId);
+        if (!product) {
+          console.log("product not found", item.productId, item.qty);
+        } else {
+          const updatedStock = product.stock - item.qty;
+          await this.updateProduct({
+            id: product.id,
+            stock: updatedStock,
+          });
+          console.log("updated stock for product", product.id, updatedStock);
+        }
+      });
+    } else if (message.event === CatalogEvent.CANCEL_ORDER) {
+      console.log("cancel order event", message.data);
+
+      const orderData = message.data as OrderWithLineItems;
+      console.log(message.data)
+      const { lineItems } = orderData;
+
+      lineItems?.forEach(async (item) => {
+        console.log("updateing stock for item", item);
+        const product = await this._repository.findOne(item.productId);
+        if (!product) {
+          console.log("product not found", item.productId, item.qty);
+        } else {
+          const updatedStock = product.stock + item.qty;
+          await this.updateProduct({
+            id: product.id,
+            stock: updatedStock,
+          });
+          console.log("updated stock for product", product.id, updatedStock);
+        }
+      });
+    }
   }
 }

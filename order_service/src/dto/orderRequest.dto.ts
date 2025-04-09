@@ -16,7 +16,7 @@ export type OrderLineItemType = {
     txnId: string | null;
     amount: string;
     status: string;
-    orderItems: OrderLineItemType[];
+    lineItems: OrderLineItemType[];
     createdAt?: Date;
     updatedAt?: Date;
   }

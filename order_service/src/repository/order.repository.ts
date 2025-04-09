@@ -25,7 +25,7 @@ const createOrder = async (lineItem: OrderWithLineItems): Promise<number> => {
   const [{ id }] = result;
 
   if (id > 0) {
-    for (const item of lineItem.orderItems) {
+    for (const item of lineItem.lineItems) {
       await DB.insert(orderLineItems)
         .values({
           orderId: id,

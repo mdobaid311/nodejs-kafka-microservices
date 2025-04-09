@@ -2,7 +2,10 @@ import { OrderLineItemType, OrderWithLineItems } from "../dto/orderRequest.dto";
 import { CartRepositoryType } from "../repository/cart.repository";
 import { OrderRepositoryType } from "../repository/order.repository";
 import { MessageType, OrderStatus } from "../types";
-import { SendCreateOrderMessage } from "./broker.service";
+import {
+  SendCreateOrderMessage,
+  SendOrderCancelledMessage,
+} from "./broker.service";
 
 export const CreateOrder = async (
   userId: number,
@@ -34,11 +37,11 @@ export const CreateOrder = async (
   // crate order with line itesms
   const orderInput: OrderWithLineItems = {
     orderNumber: orderNumber,
+    txnId: null, // Payment ID to keep track of successful payment status
+    status: OrderStatus.PENDING, // payment status will be updated by payment service
     customerId: userId,
     amount: cartTotal.toString(),
-    txnId: null,
-    orderItems: orderLineItems,
-    status: OrderStatus.PENDING,
+    lineItems: orderLineItems,
   };
 
   const order = await repo.createOrder(orderInput);
@@ -88,7 +91,20 @@ export const DeleteOrder = async (
   orderId: number,
   repo: OrderRepositoryType
 ) => {
+  const order = await repo.findOrder(orderId);
+  if (!order) {
+    throw new Error("Order not found");
+  }
   await repo.deleteOrder(orderId);
+  console.log("order deleted", order);
+
+  const cancelledOrder = {
+    id: order.id,
+    orderNumber: order.orderNumber,
+    lineItems: order.lineItems,
+  };
+
+  await SendOrderCancelledMessage(cancelledOrder);
   return true;
 };
 

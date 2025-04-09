@@ -60,7 +60,11 @@ export class CatalogService {
         console.log("product not found", item.productId, item.qty);
       } else {
         const updatedStock = product.stock - item.qty;
-        await this._repository.update({ ...product, stock: updatedStock });
+        await this.updateProduct({
+          id: product.id,
+          stock: updatedStock,
+        });
+        console.log("updated stock for product", product.id, updatedStock);
       }
     });
   }

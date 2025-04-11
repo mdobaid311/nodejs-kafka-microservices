@@ -13,7 +13,7 @@ const AUTH_SERVICE_BASE_URL =
 export const GetOrderDetails = async (orderNumber: number) => {
   try {
     console.log(`${ORDER_SERVIVCE_BASE_URL}/orders/${orderNumber}/checkout`)
-    const response = await axios.post(
+    const response = await axios.get(
       `${ORDER_SERVIVCE_BASE_URL}/orders/${orderNumber}/checkout`
     );
     return response.data as InProcessOrder;

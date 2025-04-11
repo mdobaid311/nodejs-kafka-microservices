@@ -5,7 +5,7 @@ import {
 } from "../dto/orderRequest.dto";
 import { CartRepositoryType } from "../repository/cart.repository";
 import { OrderRepositoryType } from "../repository/order.repository";
-import { MessageType, OrderStatus } from "../types";
+import { MessageType, OrderEvent, OrderStatus } from "../types";
 import {
   SendCreateOrderMessage,
   SendOrderCancelledMessage,
@@ -114,6 +114,14 @@ export const DeleteOrder = async (
 
 export const HandleSubscription = async (message: MessageType) => {
   console.log("Received message", message);
+
+  if (message.event === OrderEvent.UPDATE_ORDER) {
+    const order = message.data as InProcessOrder;
+    console.log("order", order);
+    if (!order) {
+      throw new Error("Order not found");
+    }
+  }
 };
 
 export const CheckoutOrder = async (
@@ -121,6 +129,7 @@ export const CheckoutOrder = async (
   repo: OrderRepositoryType
 ) => {
   const order = await repo.findOrderByOrderNumber(orderNumber);
+  console.log("order", order);
   if (!order) {
     throw new Error("Order not found");
   }

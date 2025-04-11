@@ -31,9 +31,12 @@ const getPayment = async (
   const paymentResponse = await stripe.paymentIntents.retrieve(paymentId, {});
   console.log("Payment Response: ", paymentResponse);
   const { status } = paymentResponse;
+  const orderNumber = paymentResponse.metadata["orderNumber"];
+
   return {
     status,
     paymentLog: paymentResponse,
+    orderNumber,
   };
 };
 

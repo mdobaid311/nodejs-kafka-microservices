@@ -102,6 +102,7 @@ router.delete(
 router.get("/orders/:id/checkout", async (req: Request, res: Response) => {
   try {
     const orderNumber = parseInt(req.params.id) || 0;
+    console.log("orderNumber", orderNumber);
     const response = await service.CheckoutOrder(orderNumber, repo);
     console.log("response", response);
     res.status(200).json(response);

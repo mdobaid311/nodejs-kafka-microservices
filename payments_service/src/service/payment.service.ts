@@ -1,5 +1,6 @@
 import { PaymentGateway } from "../utils";
 import { GetOrderDetails } from "../utils/broker/api";
+import { SendPaymentUpdateMessage } from "./broker.service";
 
 export const CreatePayment = async (
   userId: number,
@@ -19,28 +20,34 @@ export const CreatePayment = async (
   // create a new payment record
 
   // call payment gateway to create payment
-
+  const paymentResponse = await paymentGateway.createPayment(order.amount, {
+    orderId: orderNumber,
+    userId,
+  });
   // return payment secrets
-
-  // amount has to be fetched from order service
   return {
-    secret: "",
-    pubKey: "",
-    amount: 100,
+    secret: paymentResponse.secret,
+    pubKey: paymentResponse.pubKey,
+    amount: paymentResponse.amount,
   };
 };
 
 export const VerifyPayment = async (
   paymentId: string,
-  paymentGateway: unknown
+  paymentGateway: PaymentGateway
 ) => {
-  // call payment ateway to verify payment
+  // verify payment with payment gateway
+  const paymentResponse = await paymentGateway.getPayment(paymentId);
 
-  // update order status through message broker
-
-  // return paymentn status <= not necessary just for resposne to frontend
+  // update payment record in database
+  await SendPaymentUpdateMessage({
+    paymentId,
+    paymentLog: paymentResponse.paymentLog,
+  });
+  // return success response
   return {
-    status: "success",
     message: "Payment verified successfully",
+    status: paymentResponse.status,
+    paymentLog: paymentResponse.paymentLog,
   };
 };

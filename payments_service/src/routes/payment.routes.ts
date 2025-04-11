@@ -17,7 +17,7 @@ router.post(
     }
     try {
       const { orderNumber } = req.body;
-
+      console.log("user.id, orderNumber, paymentGateway",user.id, orderNumber, paymentGateway);
       const response = await service.CreatePayment(
         user.id,
         orderNumber,

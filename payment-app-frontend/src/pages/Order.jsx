@@ -68,7 +68,8 @@ const Order = () => {
       const response = await createPaymentApi(orderNumber);
       console.log("response", response);
       if (response.status === 200) {
-        dispatch(setPayment(response.data));
+        console.log("response", response.data.data);
+        dispatch(setPayment(response.data.data));
         setInitiatePayment(true);
       }
     } catch (error) {

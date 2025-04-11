@@ -97,18 +97,20 @@ const findOrdersByCustomerId = async (
 const findOrderByOrderNumber = async (
   orderNumber: number
 ): Promise<OrderWithLineItems | null> => {
+  console.log("orderNumber 1", orderNumber);
   const order = await DB.query.orders.findFirst({
     where: (orders, { eq }) => eq(orders.orderNumber, orderNumber),
     with: {
       lineItems: true,
     },
   });
+  console.log("order is", order);
 
   if (!order) {
     throw new Error("Order not found");
   }
-
-  return order as unknown as OrderWithLineItems;
+  console.log("here 12123");
+  return order as OrderWithLineItems;
 };
 
 export const OrderRepository: OrderRepositoryType = {

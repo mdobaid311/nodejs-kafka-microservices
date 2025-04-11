@@ -24,8 +24,8 @@ export const CreatePayment = async (
 
   // amount has to be fetched from order service
   return {
-    secret: "sk_test_4eC39HqLyjWDarjtT1zdp7dc",
-    pubKey: "pk_test_TYooMQauyPWE4Q",
+    secret: "",
+    pubKey: "",
     amount: 100,
   };
 };

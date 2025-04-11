@@ -1,6 +1,7 @@
 import { ICatalogRespostory } from "../interface/catalogRepository.interface";
 import { CatalogEvent } from "../types";
 import { OrderWithLineItems } from "../types/message.type";
+import { AppEventListener } from "../utils/AppEventListener";
 
 export class CatalogService {
   private _repository: ICatalogRespostory;
@@ -14,6 +15,10 @@ export class CatalogService {
     if (!data.id) {
       throw new Error("unable to create product");
     }
+    AppEventListener.instance.notify({
+      event: "createProduct",
+      data,
+    });
     return data;
   }
 
@@ -23,6 +28,10 @@ export class CatalogService {
     if (!data.id) {
       throw new Error("unable to update product");
     }
+    AppEventListener.instance.notify({
+      event: "updateProduct",
+      data,
+    });
 
     return data;
   }
@@ -38,7 +47,20 @@ export class CatalogService {
   }
 
   async deleteProduct(id: any) {
-    return this._repository.delete(id);
+    const product = await this._repository.findOne(id);
+    if (!product) {
+      throw new Error("product not found");
+    }
+    const data = await this._repository.delete(id);
+    if (!data) {
+      throw new Error("unable to delete product");
+    }
+    AppEventListener.instance.notify({
+      event: "deleteProduct",
+      data: { id },
+    });
+
+    return data;
   }
 
   async getProductStock(ids: number[]) {
@@ -73,7 +95,7 @@ export class CatalogService {
       console.log("cancel order event", message.data);
 
       const orderData = message.data as OrderWithLineItems;
-      console.log(message.data)
+      console.log(message.data);
       const { lineItems } = orderData;
 
       lineItems?.forEach(async (item) => {

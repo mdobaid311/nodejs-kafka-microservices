@@ -29,7 +29,7 @@ export const CreateCart = async (
   return await repo.createCart(input.customerId, {
     productId: input.productId,
     itemName: product.name,
-    price: product.price.toString(),
+    price: product.price?.toString(),
     qty: input.qty,
     variant: product.variant,
   } as CartLineItem);
